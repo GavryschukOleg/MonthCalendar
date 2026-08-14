@@ -1,0 +1,18 @@
+# Build results
+bin/
+obj/
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.user
+*.suo
+
+# Logs
+*.log
+
+# Plugin package
+*.lplug4
+
+# macOS
+.DS_Store
