@@ -12,13 +12,13 @@ name: MonthCalendar
 displayName: MonthCalendar
 
 # Short description of the plugin.
-description: Shows the current month as a calendar on the button, highlights today, and lets you browse to the next month.
+description: A clock and date view plus a month calendar on one button. Tap to switch views. Follows the system language, with a separate US variant (12-hour clock, MM/DD/YYYY).
 
 # Name of the plugin library file.
 pluginFileName: MonthCalendarPlugin.dll
 
 # Plugin version.
-version: 1.0
+version: 1.1
 
 # Author of the plugin. The author can be a company or an individual developer.
 author: GO

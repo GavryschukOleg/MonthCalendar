@@ -14,8 +14,10 @@ namespace Loupedeck.MonthCalendarPlugin
     {
         private Int32 _year;
         private Int32 _month;
-        private Boolean _isDayView;
+        private volatile Boolean _isDayView;
+        private Boolean _unloaded;
         private Timer _refreshTimer;
+        private readonly Object _timerLock = new Object();
 
         private static CultureInfo _systemCulture;
 
@@ -60,20 +62,36 @@ namespace Loupedeck.MonthCalendarPlugin
             this._year = now.Year;
             this._month = now.Month;
             this._isDayView = true; // Start with the clock; the calendar is the second view.
+            lock (this._timerLock)
+            {
+                this._unloaded = false;
+            }
+
             this.ScheduleRefresh();
             return base.OnLoad();
         }
 
         protected override Boolean OnUnload()
         {
-            this._refreshTimer?.Dispose();
-            this._refreshTimer = null;
+            lock (this._timerLock)
+            {
+                // Set under the lock so a tick that is already running cannot reschedule after unload.
+                this._unloaded = true;
+                this._refreshTimer?.Dispose();
+                this._refreshTimer = null;
+            }
+
             return base.OnUnload();
         }
 
         protected override void RunCommand(String actionParameter)
         {
             this._isDayView = !this._isDayView;
+
+            // The month grid always opens on the current month.
+            var today = DateTime.Today;
+            this._year = today.Year;
+            this._month = today.Month;
             this.ScheduleRefresh();
             this.ActionImageChanged();
         }
@@ -272,7 +290,8 @@ namespace Loupedeck.MonthCalendarPlugin
 
             var culture = this.DisplayCulture;
             var weekdayNames = culture.DateTimeFormat.ShortestDayNames;
-            var monthName = culture.DateTimeFormat.MonthNames[this._month - 1];
+            // Some cultures (e.g. Ukrainian) return lower-case month names; capitalize for the title.
+            var monthName = culture.TextInfo.ToTitleCase(culture.DateTimeFormat.MonthNames[this._month - 1]);
 
             using (var builder = new BitmapBuilder(imageSize))
             {
@@ -358,14 +377,30 @@ namespace Loupedeck.MonthCalendarPlugin
 
         private void ScheduleRefresh()
         {
-            this._refreshTimer?.Dispose();
+            lock (this._timerLock)
+            {
+                if (this._unloaded)
+                {
+                    return;
+                }
 
-            var now = DateTime.Now;
-            var delay = this._isDayView
-                ? now.Date.AddSeconds(Math.Floor(now.TimeOfDay.TotalSeconds) + 1) - now
-                : now.Date.AddMinutes(Math.Floor(now.TimeOfDay.TotalMinutes) + 1) - now;
+                this._refreshTimer?.Dispose();
 
-            this._refreshTimer = new Timer(state => this.OnRefresh(), null, delay, Timeout.InfiniteTimeSpan);
+                // Only the 24-hour clock shows seconds; the 12-hour clock and the month grid
+                // change once a minute, so there is no point redrawing them every second.
+                var now = DateTime.Now;
+                var everySecond = this._isDayView && this.Use24HourClock;
+                var delay = everySecond
+                    ? now.Date.AddSeconds(Math.Floor(now.TimeOfDay.TotalSeconds) + 1) - now
+                    : now.Date.AddMinutes(Math.Floor(now.TimeOfDay.TotalMinutes) + 1) - now;
+
+                if (delay < TimeSpan.Zero)
+                {
+                    delay = TimeSpan.Zero;
+                }
+
+                this._refreshTimer = new Timer(state => this.OnRefresh(), null, delay, Timeout.InfiniteTimeSpan);
+            }
         }
 
         private void OnRefresh()
