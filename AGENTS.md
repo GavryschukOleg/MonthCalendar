@@ -6,13 +6,14 @@
 
 ---
 
-## Актуальний стан (останнє оновлення: 12.11.2026)
+## Актуальний стан (останнє оновлення: 15.11.2026)
 
 **Проєкт:** плагін MonthCalendar для Loupedeck/Logi MX Creative Console.
 Показує на кнопці годинник із датою або календар місяця; тап перемикає вигляд. Назва плагіна для користувача — **ClockCalendar**
 (`displayName` в yaml); технічні ідентифікатори (`name: MonthCalendar`, `MonthCalendarPlugin.dll`, простір імен, репозиторій) лишилися
 старими, щоб не ламати кнопки користувачів і не плутати збірки.
-Версія пакета: **1.1** (`LoupedeckPackage.yaml`). Підготовлено до публікації на GitHub та в Logi Marketplace.
+Версія пакета: **1.1** (`LoupedeckPackage.yaml`). Випущено на GitHub (реліз `v1.1`, репозиторій публічний, гілка `main`);
+далі — Logi Marketplace.
 Дванадцять дизайнів у стилі плагіна HardwareMonitor (Classic, Ring, Minimal, Date, Analog, Orbit, Week, Stack, Segment, Flip, Binary, Moon),
 кожен у двох версіях — разом 24 actions, розкладених у **дві групи** в списку дій Logi: `Clock Calendar` (системна мова, 24 год)
 і `Clock Calendar (AM/PM)` (англійська, 12 год, дати США). Назви actions — просто назва дизайну (`Ring`, `Ring (AM/PM)` тощо).
@@ -21,7 +22,7 @@
 **Платформи:** пакет двоплатформовий: у yaml є `pluginFolderWin: win` і `pluginFolderMac: mac`. Кожну частину збирають на своїй ОС
 (Windows → `bin/Release/win`, macOS → `bin/Release/mac`), в один пакет їх зводять разом. `logiplugintool verify` не пропускає пакет,
 поки немає однієї з папок, тому `pack`/`verify` запускають тільки коли є обидві. Щоденна розробка на Windows цим не страждає.
-Код не залежить від ОС (є гілка для macOS у `SystemCulture`), але macOS-частину ще **не** збирали з цим кодом і не перевіряли.
+Код не залежить від ОС (є гілка для macOS у `SystemCulture`). Пакет 1.1 перевірено на обох ОС, на пристрої — працює.
 
 ---
 
@@ -70,6 +71,35 @@
 ---
 
 ## Хронологія змін
+
+### 2026-11-15 — сесія: збірка macOS, двоплатформовий пакет, реліз v1.1 на GitHub
+
+**Збірка на macOS:** `dotnet build -c Release` (SDK 10.0.401) — 0 попереджень, 0 помилок; `bin/Release/mac/` поруч із
+готовою `win/` з Windows. Плагін завантажився в Logi Plugin Service на Маці з репозиторію: `24 dynamic actions loaded`,
+`version '1.1'`. Змін коду під macOS не знадобилося: `SystemCulture` правильно читає `defaults read -g AppleLanguages`
+(`"uk-UA"`). Автор перевірив пакет на пристрої і на Windows, і на macOS — працює.
+
+**Пакет:** `MonthCalendar_1_1.lplug4` (43 706 байт: `win/`, `mac/`, `metadata/`), `logiplugintool verify` — OK.
+
+**Реліз на GitHub (як у HardwareMonitor):** тег `v1.1` на коміті «Release 1.1», заголовок `MonthCalendar 1.1`, пакет
+прикріплено. Репозиторій зроблено публічним, додано опис, гілка за замовчуванням — `main`; гілку `master` (лише initial
+commit) видалено. Гілку `marketplace-prep` (стара підготовка 1.1 від 02.11, замінена релізом) автор вирішив залишити.
+README: macOS тепер підтримується (бейдж, вимоги, шлях до логу на Маці), розмір пакета «under 50 KB».
+
+**Корисне, що з'ясовано (macOS):**
+- `logiplugintool` 6.1.4 зібраний під .NET 8; якщо встановлено лише .NET 10, він не запускається. Рішення:
+  `DOTNET_ROLL_FORWARD=Major logiplugintool …` (або поставити .NET 8 runtime). Інструмент лежить у `~/.dotnet/tools`,
+  який треба додати в `PATH`.
+- На macOS `.csproj` пише в `MonthCalendarPlugin.link` шлях із пробілом у кінці (через `\` перед `>` у команді `echo`);
+  сервіс це приймає, плагін вантажиться. Шлях до репозиторію на Маці теж містить пробіл (`Vibecoding Apps /`) — не заважає.
+- У `~/Library/Application Support/Logi/LogiPluginService/Plugins/MonthCalendar/` лежить стара встановлена 1.0 (від 13.08);
+  сервіс усе одно бере версію через лінк. Автор вирішив її поки не видаляти.
+- Лог плагіна на Маці: `~/Library/Application Support/Logi/LogiPluginService/Logs/plugin_logs/MonthCalendar.log`.
+
+**Подальші кроки:**
+- Подати плагін у Logi Marketplace.
+- Компактніший вигляд місяця для кнопок 50 px, якщо такі пристрої є.
+- Ідея: обертання диска для перегортання місяців (потрібен `PluginDynamicAdjustment`).
 
 ### 2026-11-12 — сесія: дизайн у стилі HardwareMonitor, 4 варіанти як окремі actions, підготовка до релізу 1.1
 
@@ -248,5 +278,5 @@ logiplugintool verify ./MonthCalendar.lplug4
    Файл для релізу назвати `MonthCalendar_<версія з підкресленням>.lplug4` (наприклад `MonthCalendar_1_1.lplug4`) — так
    само, як у HardwareMonitor.
 5. На GitHub: тег `v1.1`, заголовок `MonthCalendar 1.1`, опис — рядок-резюме, «What's new in 1.1», «Install»
-   (нумеровані кроки) і посилання на README. `.lplug4` у git не комітиться (є в `.gitignore`). Додати в README, що macOS
-   підтримується, лише після перевірки на Маку.
+   (нумеровані кроки) і посилання на README. `.lplug4` у git не комітиться (є в `.gitignore`). Перед релізом перевіряти пакет
+   на обох ОС.

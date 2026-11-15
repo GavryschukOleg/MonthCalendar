@@ -5,7 +5,7 @@
 <p align="center">
   <a href="https://github.com/GavryschukOleg/MonthCalendar/releases"><img src="https://img.shields.io/github/v/release/GavryschukOleg/MonthCalendar?label=release&color=33c44c" alt="Latest release"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT license"></a>
-  <img src="https://img.shields.io/badge/platform-Windows-0078D4" alt="Windows">
+  <img src="https://img.shields.io/badge/platform-Windows%20%7C%20macOS-0078D4" alt="Windows and macOS">
   <a href="https://paypal.me/donicteck"><img src="https://img.shields.io/badge/donate-PayPal-00457C?logo=paypal&logoColor=white" alt="Donate via PayPal"></a>
 </p>
 
@@ -21,7 +21,7 @@ It uses the same flat dark look as the [HardwareMonitor](https://github.com/Gavr
 - **Twelve designs** - digital, analog, rings, LED segments, flip cards, binary dots, the moon and more. Put one on a key, or several on different keys.
 - **Two editions of every design** - a regular one (24-hour clock, system language, `dd.MM.yyyy`) and an AM/PM one (12-hour clock, English, `MM/dd/yyyy`), kept in two separate folders of the action list.
 - **Fits the key** - text is measured and fitted to the key size, long month names fall back to abbreviations.
-- **Lightweight** - no settings, no network access, no background services. The package is under 30 KB.
+- **Lightweight** - no settings, no network access, no background services. The package is under 50 KB.
 
 ## Designs
 
@@ -137,7 +137,7 @@ The palette is shared with HardwareMonitor.
 
 ## Requirements
 
-- Windows 10 or 11. macOS is not supported yet.
+- Windows 10 or 11, or macOS. One package works on both.
 - Logi Options+ (it ships the Logi Plugin Service the plugin runs in).
 - A Logitech MX Creative Console, Loupedeck CT / Live / Live S, or Razer Stream Controller (X).
 
@@ -156,10 +156,10 @@ The palette is shared with HardwareMonitor.
 
 | Problem | What to do |
 | --- | --- |
-| The actions do not show up after installing | Fully quit Logi Options+ from the tray icon and start it again. |
+| The actions do not show up after installing | Fully quit Logi Options+ (from the tray icon on Windows, the menu bar icon on macOS) and start it again. |
 | The language is not the one you want | The plain actions follow the language of the operating system. Use the AM/PM editions (the **Clock Calendar (AM/PM)** group) for English. |
 | The month is hard to read on a small key | On 50 px keys the month grid is very dense. The 80 px and 116 px keys show it comfortably. |
-| The clock stopped updating | Tap the key. If it ever happens again, please open an issue and attach `MonthCalendar.log` from `%LOCALAPPDATA%\Logi\LogiPluginService\Logs\plugin_logs`. |
+| The clock stopped updating | Tap the key. If it ever happens again, please open an issue and attach `MonthCalendar.log` from `%LOCALAPPDATA%\Logi\LogiPluginService\Logs\plugin_logs` (Windows) or `~/Library/Application Support/Logi/LogiPluginService/Logs/plugin_logs` (macOS). |
 
 ## Building from source
 
