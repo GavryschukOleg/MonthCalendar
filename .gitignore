@@ -2,7 +2,7 @@
 bin/
 obj/
 
-# Visual Studio / Rider
+# Visual Studio / Rider / VS Code
 .vs/
 .idea/
 *.user
@@ -11,8 +11,9 @@ obj/
 # Logs
 *.log
 
-# Plugin package
+# Plugin package (attach it to a GitHub release instead of committing it)
 *.lplug4
 
-# macOS
+# OS files
 .DS_Store
+Thumbs.db
