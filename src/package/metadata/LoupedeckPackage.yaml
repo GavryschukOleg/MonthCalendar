@@ -18,7 +18,7 @@ description: A clock and a month calendar on a single key - tap to switch betwee
 pluginFileName: MonthCalendarPlugin.dll
 
 # Plugin version.
-version: 1.1
+version: 1.1.1
 
 # Author of the plugin. The author can be a company or an individual developer.
 author: GO

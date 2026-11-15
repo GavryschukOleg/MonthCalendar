@@ -143,11 +143,11 @@ The palette is shared with HardwareMonitor.
 
 ## Installation
 
-1. Download `ClockCalendar_1_1.lplug4` from the [Releases](https://github.com/GavryschukOleg/MonthCalendar/releases) page.
+1. Download `ClockCalendar_1_1_1.lplug4` from the [Releases](https://github.com/GavryschukOleg/MonthCalendar/releases) page.
 2. Double-click the file, or install it from a terminal:
 
    ```powershell
-   logiplugintool install ./ClockCalendar_1_1.lplug4
+   logiplugintool install ./ClockCalendar_1_1_1.lplug4
    ```
 
 3. In Logi Options+ open the **Clock Calendar** group (or **Clock Calendar (AM/PM)**) and drag an action onto a key.
