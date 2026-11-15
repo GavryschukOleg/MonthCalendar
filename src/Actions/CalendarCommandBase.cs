@@ -22,7 +22,8 @@ namespace Loupedeck.MonthCalendarPlugin
 
         private Int32 _year;
         private Int32 _month;
-        private Boolean _isDayView;
+        private volatile Boolean _isDayView;
+        private Boolean _unloaded;
         private Timer _refreshTimer;
 
         protected CalendarCommandBase(String displayName, String description, String groupName)
@@ -52,6 +53,11 @@ namespace Loupedeck.MonthCalendarPlugin
             this._year = now.Year;
             this._month = now.Month;
             this._isDayView = true; // Start with the clock; the calendar is the second view.
+            lock (this._timerLock)
+            {
+                this._unloaded = false;
+            }
+
             this.ScheduleRefresh();
             return base.OnLoad();
         }
@@ -60,6 +66,8 @@ namespace Loupedeck.MonthCalendarPlugin
         {
             lock (this._timerLock)
             {
+                // Set under the lock so that a tick which is already running cannot create a new timer after the unload.
+                this._unloaded = true;
                 this._refreshTimer?.Dispose();
                 this._refreshTimer = null;
             }
@@ -70,6 +78,11 @@ namespace Loupedeck.MonthCalendarPlugin
         protected override void RunCommand(String actionParameter)
         {
             this._isDayView = !this._isDayView;
+
+            // The month view always opens on the current month, even after the clock ran over a month change.
+            var today = DateTime.Today;
+            this._year = today.Year;
+            this._month = today.Month;
             this.ScheduleRefresh();
             this.ActionImageChanged();
         }
@@ -212,12 +225,22 @@ namespace Loupedeck.MonthCalendarPlugin
             // until the next tap creates a fresh timer.
             lock (this._timerLock)
             {
+                if (this._unloaded)
+                {
+                    return;
+                }
+
                 this._refreshTimer?.Dispose();
 
                 var now = DateTime.Now;
                 var delay = this._isDayView && this.Style.TicksEverySecond
                     ? now.Date.AddSeconds(Math.Floor(now.TimeOfDay.TotalSeconds) + 1) - now
                     : now.Date.AddMinutes(Math.Floor(now.TimeOfDay.TotalMinutes) + 1) - now;
+
+                if (delay < TimeSpan.Zero)
+                {
+                    delay = TimeSpan.Zero;
+                }
 
                 this._refreshTimer = new Timer(state => this.OnRefresh(), null, delay, Timeout.InfiniteTimeSpan);
             }
