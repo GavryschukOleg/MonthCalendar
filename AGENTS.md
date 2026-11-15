@@ -79,9 +79,9 @@
 `version '1.1'`. Змін коду під macOS не знадобилося: `SystemCulture` правильно читає `defaults read -g AppleLanguages`
 (`"uk-UA"`). Автор перевірив пакет на пристрої і на Windows, і на macOS — працює.
 
-**Пакет:** `MonthCalendar_1_1.lplug4` (43 706 байт: `win/`, `mac/`, `metadata/`), `logiplugintool verify` — OK.
+**Пакет:** `MonthCalendar_1_1.lplug4`, згодом перейменований на `ClockCalendar_1_1.lplug4` (43 706 байт: `win/`, `mac/`, `metadata/`), `logiplugintool verify` — OK.
 
-**Реліз на GitHub (як у HardwareMonitor):** тег `v1.1` на коміті «Release 1.1», заголовок `MonthCalendar 1.1`, пакет
+**Реліз на GitHub (як у HardwareMonitor):** тег `v1.1` на коміті «Release 1.1», заголовок `ClockCalendar 1.1`, пакет
 прикріплено. Репозиторій зроблено публічним, додано опис, гілка за замовчуванням — `main`; гілку `master` (лише initial
 commit) видалено. Гілку `marketplace-prep` (стара підготовка 1.1 від 02.11, замінена релізом) автор вирішив залишити.
 README: macOS тепер підтримується (бейдж, вимоги, шлях до логу на Маці), розмір пакета «under 50 KB».
@@ -92,11 +92,18 @@ README: macOS тепер підтримується (бейдж, вимоги, �
   який треба додати в `PATH`.
 - На macOS `.csproj` пише в `MonthCalendarPlugin.link` шлях із пробілом у кінці (через `\` перед `>` у команді `echo`);
   сервіс це приймає, плагін вантажиться. Шлях до репозиторію на Маці теж містить пробіл (`Vibecoding Apps /`) — не заважає.
-- У `~/Library/Application Support/Logi/LogiPluginService/Plugins/MonthCalendar/` лежить стара встановлена 1.0 (від 13.08);
-  сервіс усе одно бере версію через лінк. Автор вирішив її поки не видаляти.
+- У `~/Library/Application Support/Logi/LogiPluginService/Plugins/MonthCalendar/` лежала стара встановлена 1.0 (від 13.08,
+  35 МБ); сервіс усе одно брав версію через лінк. Її перенесено в Кошик; після reload плагін 1.1 вантажиться з 24 actions.
 - Лог плагіна на Маці: `~/Library/Application Support/Logi/LogiPluginService/Logs/plugin_logs/MonthCalendar.log`.
 
+**Перейменування пакета:** файл релізу тепер `ClockCalendar_1_1.lplug4` (вміст не змінено, SHA-256 той самий); у релізі
+`v1.1` старий файл `MonthCalendar_1_1.lplug4` замінено новим. Технічна назва плагіна (`name: MonthCalendar`) не змінилась.
+
+**Увага:** коміт `2760632` (виправлення таймера після unload, місяць завжди відкривається на поточному) зроблено вже після
+тегу `v1.1` — у пакеті 1.1 його немає. Він увійде в наступну версію (зібрати win + mac).
+
 **Подальші кроки:**
+- Випустити наступну версію з комітом `2760632`.
 - Подати плагін у Logi Marketplace.
 - Компактніший вигляд місяця для кнопок 50 px, якщо такі пристрої є.
 - Ідея: обертання диска для перегортання місяців (потрібен `PluginDynamicAdjustment`).
@@ -257,8 +264,8 @@ HardwareMonitor: `src/` і `.sln` у корені (без вкладеної п�
 
 ```powershell
 dotnet build -c Release
-logiplugintool pack ./bin/Release ./MonthCalendar.lplug4
-logiplugintool verify ./MonthCalendar.lplug4
+logiplugintool pack ./bin/Release ./ClockCalendar.lplug4
+logiplugintool verify ./ClockCalendar.lplug4
 ```
 
 `logiplugintool` — глобальний .NET-інструмент (`dotnet tool install --global logiplugintool`).
@@ -274,9 +281,9 @@ logiplugintool verify ./MonthCalendar.lplug4
 3. На Mac: потрібна та сама версія коду. Найпростіше — скопіювати проєкт цілком (без `obj/`) разом із готовим
    `bin/Release/win/`, на Маку `dotnet build -c Release` (створює `bin/Release/mac/`; **не** робити `dotnet clean` — він
    видаляє всю `bin/Release`, разом із `win/`), далі спакувати й перевірити.
-4. Пакувати там, де є обидві папки: `logiplugintool pack ./bin/Release ./MonthCalendar_<версія>.lplug4`, потім `verify`.
-   Файл для релізу назвати `MonthCalendar_<версія з підкресленням>.lplug4` (наприклад `MonthCalendar_1_1.lplug4`) — так
+4. Пакувати там, де є обидві папки: `logiplugintool pack ./bin/Release ./ClockCalendar_<версія>.lplug4`, потім `verify`.
+   Файл для релізу назвати `ClockCalendar_<версія з підкресленням>.lplug4` (наприклад `ClockCalendar_1_1.lplug4`; ім'я файлу — назва для користувача, а не технічний `MonthCalendar`) — так
    само, як у HardwareMonitor.
-5. На GitHub: тег `v1.1`, заголовок `MonthCalendar 1.1`, опис — рядок-резюме, «What's new in 1.1», «Install»
+5. На GitHub: тег `v1.1`, заголовок `ClockCalendar 1.1`, опис — рядок-резюме, «What's new in 1.1», «Install»
    (нумеровані кроки) і посилання на README. `.lplug4` у git не комітиться (є в `.gitignore`). Перед релізом перевіряти пакет
    на обох ОС.
